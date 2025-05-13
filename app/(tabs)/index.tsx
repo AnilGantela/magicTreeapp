@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
@@ -5,14 +6,16 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-export default Home = () => {
+export default function Home() {
   const [groupedProducts, setGroupedProducts] = useState({});
   const carouselRef = useRef(null);
+  const router = useRouter();
 
   const bannerImages = [
     { id: 1, src: require("@/assets/images/banner1.jpg") },
@@ -44,13 +47,11 @@ export default Home = () => {
     fetchProducts();
   }, []);
 
-  const renderBannerItem = ({ item }) => (
-    <Image source={item.src} style={styles.bannerImage} resizeMode="cover" />
-  );
-
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.bannerContainer}></View>
+      <View style={styles.bannerContainer}>
+        {/* Add banner scroll if needed */}
+      </View>
 
       {Object.entries(groupedProducts).map(([category, products]) => (
         <View key={category}>
@@ -66,9 +67,10 @@ export default Home = () => {
               );
 
               return (
-                <View
+                <TouchableOpacity
                   key={product._id || product.id}
                   style={styles.productCard}
+                  onPress={() => router.push(`/Search/${product._id}`)}
                 >
                   {product.discount > 0 && (
                     <Text style={styles.discountBadge}>
@@ -93,7 +95,7 @@ export default Home = () => {
                       ⭐ {product.averageRating || 5}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </ScrollView>
@@ -101,7 +103,7 @@ export default Home = () => {
       ))}
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

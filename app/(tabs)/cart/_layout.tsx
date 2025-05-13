@@ -5,29 +5,19 @@ export default function SearchStackLayout() {
 
   return (
     <Stack>
+      {/* Hide header for /search/index */}
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
-
-      {/*      <Stack.Screen
-        name="payment"
+      <Stack.Screen
+        name="checkout"
         options={{
-          title: "",
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: COLORS.SECONDARY,
-          },
-          headerTintColor: "#ffffff",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace("/(tabs)/cart")}>
-              <Ionicons name="arrow-back" size={24} color="#ffffff" />
-            </TouchableOpacity>
-          ),
+          headerShown: false,
         }}
-      />*/}
+      />
     </Stack>
   );
 }

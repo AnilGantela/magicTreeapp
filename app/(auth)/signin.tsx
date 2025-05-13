@@ -1,13 +1,18 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
   Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  View,
 } from "react-native";
 
 const Register = () => {
@@ -15,8 +20,8 @@ const Register = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: "",
     phone: "",
+    password: "",
     street: "",
     city: "",
     state: "",
@@ -32,8 +37,8 @@ const Register = () => {
     const requiredFields = [
       "name",
       "email",
-      "password",
       "phone",
+      "password",
       "street",
       "city",
       "state",
@@ -89,9 +94,9 @@ const Register = () => {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Registration failed");
-      await SecureStore.setItemAsync("jwtToken", data.token);
 
-      Alert.alert("Success", "Account created. Please login.");
+      await SecureStore.setItemAsync("magicTreeToken", data.token);
+      Alert.alert("Success", "Account created successfully.");
       router.replace("/(tabs)");
     } catch (err: any) {
       Alert.alert("Error", err.message);
@@ -99,36 +104,155 @@ const Register = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Register</Text>
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
+        {/* Top image section (non-scrollable) */}
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.image}
+            source={require("@/assets/images/AppLogo.jpg")}
+            resizeMode="contain"
+          />
+        </View>
 
-      {Object.entries(form).map(([key, value]) => (
-        <TextInput
-          key={key}
-          placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-          value={value}
-          onChangeText={(text) => handleChange(key, text)}
-          style={styles.input}
-        />
-      ))}
+        {/* Form section (scrollable) */}
+        <LinearGradient
+          colors={["hsla(20, 100%, 22%, 1)", "hsla(19, 100%, 56%, 1)"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.formWrapper}
+        >
+          <ScrollView
+            contentContainerStyle={styles.formContainer}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text style={styles.title}>Register</Text>
 
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Register</Text>
-      </Pressable>
+            <TextInput
+              placeholder="Name"
+              value={form.name}
+              onChangeText={(text) => handleChange("name", text)}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Email"
+              value={form.email}
+              onChangeText={(text) => handleChange("email", text)}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Phone"
+              value={form.phone}
+              onChangeText={(text) => handleChange("phone", text)}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Password"
+              value={form.password}
+              secureTextEntry
+              onChangeText={(text) => handleChange("password", text)}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Street"
+              value={form.street}
+              onChangeText={(text) => handleChange("street", text)}
+              style={styles.input}
+            />
 
-      <Pressable onPress={() => router.push("/auth/login")}>
-        <Text style={styles.link}>Already a member? Login here</Text>
-      </Pressable>
-    </ScrollView>
+            <View style={styles.row}>
+              <TextInput
+                placeholder="City"
+                value={form.city}
+                onChangeText={(text) => handleChange("city", text)}
+                style={[styles.input, styles.halfInput, { marginRight: 10 }]}
+              />
+              <TextInput
+                placeholder="Zip"
+                value={form.zip}
+                onChangeText={(text) => handleChange("zip", text)}
+                style={[styles.input, styles.halfInput]}
+              />
+            </View>
+
+            <View style={styles.row}>
+              <TextInput
+                placeholder="State"
+                value={form.state}
+                onChangeText={(text) => handleChange("state", text)}
+                style={[styles.input, styles.halfInput, { marginRight: 10 }]}
+              />
+
+              <TextInput
+                placeholder="Country"
+                value={form.country}
+                onChangeText={(text) => handleChange("country", text)}
+                style={[styles.input, styles.halfInput]}
+              />
+            </View>
+
+            <Pressable onPress={handleSubmit}>
+              <LinearGradient
+                colors={["hsla(151, 93%, 22%, 1)", "hsla(151, 97%, 12%, 1)"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Register</Text>
+              </LinearGradient>
+            </Pressable>
+
+            <Pressable onPress={() => router.push("/(auth)/login")}>
+              <Text style={styles.link}>Already a member? Login here</Text>
+            </Pressable>
+          </ScrollView>
+        </LinearGradient>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
 export default Register;
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: "#e3e4e2",
+  },
+  imageContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 30,
+    paddingBottom: 20,
+  },
+  image: {
+    width: 200,
+    height: 150,
+  },
+  formWrapper: {
+    flex: 1,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    overflow: "hidden",
+  },
+  formContainer: {
+    paddingHorizontal: 30,
+    paddingBottom: 40,
+    paddingTop: 10,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#fff",
+  },
   input: {
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 12,
@@ -136,12 +260,27 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
-    backgroundColor: "#28a745",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 10,
   },
-  buttonText: { color: "#fff", fontWeight: "bold" },
-  link: { color: "#007bff", marginTop: 10, textAlign: "center" },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  link: {
+    color: "#fff",
+    marginTop: 10,
+    textAlign: "center",
+    textDecorationLine: "underline",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  halfInput: {
+    flex: 1,
+  },
 });

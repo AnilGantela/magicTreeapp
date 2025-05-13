@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -18,7 +19,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = await SecureStore.getItemAsync("jwtToken");
+      const token = await SecureStore.getItemAsync("magicTreeToken");
       if (!token) return router.replace("/login");
 
       try {
@@ -53,6 +54,11 @@ const ProfilePage = () => {
     fetchData();
   }, []);
 
+  const handleLogout = async () => {
+    await SecureStore.deleteItemAsync("magicTreeToken");
+    router.replace("/login");
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -63,7 +69,13 @@ const ProfilePage = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>User Details</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>User Details</Text>
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.infoBox}>
         <Text style={styles.label}>Name:</Text>
         <Text style={styles.value}>{user?.name}</Text>
@@ -137,11 +149,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",
     marginVertical: 12,
     color: "#222",
+  },
+  logoutText: {
+    color: "#e53935",
+    fontWeight: "600",
+    fontSize: 16,
   },
   infoBox: {
     backgroundColor: "#f5f5f5",

@@ -1,15 +1,22 @@
 import { COLORS } from "@/constants/Theme";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
+import { StyleSheet } from "react-native";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: COLORS.SECONDARY,
-        },
+        tabBarBackground: () => (
+          <LinearGradient
+            colors={["hsla(151, 93%, 22%, 1)", "hsla(151, 97%, 12%, 1)"]}
+            start={[0, 0]}
+            end={[1, 0]}
+            style={StyleSheet.absoluteFill}
+          />
+        ),
         tabBarActiveTintColor: COLORS.WHITE,
         tabBarInactiveTintColor: COLORS.BLACK,
       }}
@@ -17,7 +24,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "index",
+          title: "Home",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" color={color} size={size} />
           ),
@@ -44,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "profile",
+          title: "Profile",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" color={color} size={size} />
           ),

@@ -12,7 +12,7 @@ export default function SearchStackLayout() {
       <Stack.Screen
         name="login"
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
 
@@ -20,7 +20,7 @@ export default function SearchStackLayout() {
         name="signin"
         options={{
           title: "",
-          headerShown: true,
+          headerShown: false,
           headerStyle: {
             backgroundColor: COLORS.SECONDARY,
           },

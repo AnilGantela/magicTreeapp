@@ -8,11 +8,28 @@ export default function SearchStackLayout() {
 
   return (
     <Stack>
-      {/* Hide header for /search/index */}
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          title: "",
+          headerShown: true,
+          headerTintColor: "#ffffff",
+          headerBackground: () => (
+            <LinearGradient
+              colors={["hsla(20, 100%, 22%, 1)", "hsla(19, 100%, 56%, 1)"]}
+              start={[0, 0]}
+              end={[1, 0]}
+              style={StyleSheet.absoluteFill}
+            />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ paddingHorizontal: 10 }}
+              onPress={() => router.replace("/(tabs)/cart")}
+            >
+              <Ionicons name="arrow-back" size={24} color="#ffffff" />
+            </TouchableOpacity>
+          ),
         }}
       />
 
@@ -33,7 +50,7 @@ export default function SearchStackLayout() {
           headerLeft: () => (
             <TouchableOpacity
               style={{ paddingHorizontal: 10 }}
-              onPress={() => router.replace("/(tabs)/Search")}
+              onPress={() => router.replace("/(tabs)/cart")}
             >
               <Ionicons name="arrow-back" size={24} color="#ffffff" />
             </TouchableOpacity>

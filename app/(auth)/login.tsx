@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -23,8 +25,8 @@ const Login = () => {
       setError("Please enter a valid email.");
       return false;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 1) {
+      setError("Please enter a valid password.");
       return false;
     }
     setError("");
@@ -47,51 +49,77 @@ const Login = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Login failed");
 
-      await SecureStore.setItemAsync("jwtToken", data.token);
+      await SecureStore.setItemAsync("magicTreeToken", data.token);
       router.replace("/");
-    } catch (err) {
+    } catch (err: any) {
       Alert.alert("Login Failed", err.message);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={setEmail}
-      />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={[styles.input, { flex: 1 }]}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
+      <View style={styles.imageContainer}>
+        <Image
+          style={styles.image}
+          source={require("@/assets/images/AppLogo.jpg")}
+          alt="app-logo"
+          resizeMode="contain"
         />
-        <Pressable onPress={() => setShowPassword((prev) => !prev)}>
-          <Ionicons
-            name={showPassword ? "eye" : "eye-off"}
-            size={24}
-            color="gray"
-          />
-        </Pressable>
       </View>
 
-      <Pressable style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </Pressable>
+      <LinearGradient
+        colors={["hsla(20, 100%, 22%, 1)", "hsla(19, 100%, 56%, 1)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.formContainer}
+      >
+        <Text style={styles.title}>Login</Text>
 
-      <Pressable onPress={() => router.push("/(auth)/signin")}>
-        <Text style={styles.link}>Not a member? Register here</Text>
-      </Pressable>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <TextInput
+          style={styles.emailInput}
+          placeholder="Email"
+          value={email}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={setEmail}
+          placeholderTextColor="#fff"
+        />
+
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={[styles.input, { flex: 1, color: "#fff" }]}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            placeholderTextColor="#fff"
+          />
+          <Pressable onPress={() => setShowPassword((prev) => !prev)}>
+            <Ionicons
+              name={showPassword ? "eye" : "eye-off"}
+              size={24}
+              color="white"
+            />
+          </Pressable>
+        </View>
+
+        <Pressable onPress={handleLogin}>
+          <LinearGradient
+            colors={["hsla(151, 93%, 22%, 1)", "hsla(151, 97%, 12%, 1)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </LinearGradient>
+        </Pressable>
+
+        <Pressable onPress={() => router.push("/(auth)/signin")}>
+          <Text style={styles.link}>Not a member? Register here</Text>
+        </Pressable>
+      </LinearGradient>
     </View>
   );
 };
@@ -101,35 +129,80 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#e3e4e2", // Base container background
   },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 20 },
+  imageContainer: {
+    backgroundColor: "#e3e4e2",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 50,
+    paddingBottom: 50,
+  },
+  image: {
+    width: 200,
+    height: 150,
+    marginTop: 10,
+  },
+  formContainer: {
+    flex: 1,
+    paddingHorizontal: 30,
+    paddingTop: 20,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "white",
+  },
   input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
     padding: 12,
     borderRadius: 8,
+    height: 55,
+    fontSize: 16,
+  },
+  emailInput: {
+    borderWidth: 1.5,
+    borderColor: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    fontSize: 16,
     marginBottom: 15,
+    height: 55,
+    color: "white",
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 12,
+    borderWidth: 1.5,
+    borderColor: "#fff",
     borderRadius: 8,
+    height: 55,
     marginBottom: 15,
+    paddingRight: 10,
   },
   button: {
-    backgroundColor: "#1E90FF",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 10,
   },
-  buttonText: { color: "#fff", fontWeight: "bold" },
-  error: { color: "red", marginBottom: 10 },
-  link: { color: "#1E90FF", marginTop: 10, textAlign: "center" },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  error: {
+    color: "white",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  link: {
+    color: "#fff",
+    marginTop: 10,
+    textAlign: "center",
+    textDecorationLine: "underline",
+  },
 });
