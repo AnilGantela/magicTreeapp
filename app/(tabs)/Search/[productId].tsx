@@ -66,6 +66,9 @@ const ProductPage = () => {
         );
         setIsInCart(isProductInCart);
       } catch (err) {
+        if (err.response?.status === 404) {
+          return;
+        }
         console.error("Error checking cart items:", err);
       }
     };

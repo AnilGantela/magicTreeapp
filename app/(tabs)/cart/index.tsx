@@ -57,6 +57,9 @@ const CartScreen: React.FC = () => {
       );
       setCartItems(res.data.items || []);
     } catch (err) {
+      if (err.response?.status === 404) {
+        return;
+      }
       console.error("Error fetching cart:", err);
       setCartItems([]);
     } finally {
