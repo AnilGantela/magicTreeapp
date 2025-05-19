@@ -1,8 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -33,20 +33,52 @@ const CartScreen: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const getToken = async () => {
-      const storedToken = await SecureStore.getItemAsync("magicTreeToken");
-      if (!storedToken) {
-        router.replace("/(auth)/login");
-        return;
-      }
-      setToken(storedToken);
-    };
-    getToken();
-  }, []);
+  // Re-fetch cart every time screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCartData = async () => {
+        const storedToken = await SecureStore.getItemAsync("magicTreeToken");
+        if (!storedToken) {
+          router.replace("/(auth)/login");
+          return;
+        }
+        setToken(storedToken);
+        try {
+          setLoading(true);
+          const res = await axios.get(
+            "https://magictreebackend.onrender.com/cart/items",
+            {
+              headers: { Authorization: `Bearer ${storedToken}` },
+            }
+          );
+          setCartItems(res.data.items || []);
+        } catch (err: any) {
+          if (err.response?.status !== 404) {
+            console.error("Error fetching cart:", err);
+          }
+          setCartItems([]);
+        } finally {
+          setLoading(false);
+        }
+      };
 
+      fetchCartData();
+    }, [])
+  );
+
+  // Update total price when cart changes
+  useEffect(() => {
+    const total = cartItems.reduce(
+      (acc, item) =>
+        acc + ((item.price || 0) - (item.discount || 0)) * item.quantity,
+      0
+    );
+    setTotalPrice(total);
+  }, [cartItems]);
+
+  // Manually refresh cart
   const fetchCart = async () => {
-    if (!token) return setCartItems([]);
+    if (!token) return;
     try {
       setLoading(true);
       const res = await axios.get(
@@ -57,28 +89,12 @@ const CartScreen: React.FC = () => {
       );
       setCartItems(res.data.items || []);
     } catch (err) {
-      if (err.response?.status === 404) {
-        return;
-      }
       console.error("Error fetching cart:", err);
       setCartItems([]);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (token) fetchCart();
-  }, [token]);
-
-  useEffect(() => {
-    const total = cartItems.reduce(
-      (acc, item) =>
-        acc + ((item.price || 0) - (item.discount || 0)) * item.quantity,
-      0
-    );
-    setTotalPrice(total);
-  }, [cartItems]);
 
   const updateQuantity = async (productId: string, newQty: number) => {
     if (!token || newQty < 1) return;

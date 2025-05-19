@@ -15,6 +15,18 @@ export default function SearchStackLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="RazorpayWebView"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="verifyPayment"
+        options={{
+          headerShown: false,
+        }}
+      />
 
       <Stack.Screen
         name="signin"

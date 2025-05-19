@@ -1,12 +1,11 @@
 import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
-  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -25,8 +24,6 @@ const ProductPage = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInCart, setIsInCart] = useState(false);
-
-  const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -126,6 +123,23 @@ const ProductPage = () => {
     router.push(`/cart/checkout/${product._id}`);
   };
 
+  const renderStars = (rating: number = 5) => {
+    if (product.averageRating === 0) {
+      return;
+    }
+    const fullStars = Math.floor(product.averageRating);
+    const hasHalfStar = rating - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return (
+      <Text style={styles.rating}>
+        {"★".repeat(fullStars)}
+        {hasHalfStar ? "½" : ""}
+        {"☆".repeat(emptyStars)}
+      </Text>
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -147,21 +161,22 @@ const ProductPage = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={product.images}
-        keyExtractor={(_, index) => index.toString()}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <Image
-            source={{ uri: item }}
-            style={{ width: screenWidth, height: 300, resizeMode: "contain" }}
-          />
-        )}
-      />
+      {/* Main Image */}
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: 10,
+          paddingRight: 10,
+        }}
+      >
+        <Image
+          source={{ uri: mainImage }}
+          style={{ width: screenWidth, height: 300, resizeMode: "contain" }}
+        />
+      </View>
 
+      {/* Thumbnails */}
       <View style={styles.thumbnailRow}>
         {product.images.map((img: string, index: number) => (
           <TouchableOpacity key={index} onPress={() => setMainImage(img)}>
@@ -177,31 +192,55 @@ const ProductPage = () => {
       </View>
 
       <View style={styles.details}>
-        <Text style={styles.name}>{product.name}</Text>
-        <Text>
-          <Text style={{ fontWeight: "bold" }}>Category:</Text>{" "}
-          {product.category}
-        </Text>
-        <Text>
-          <Text style={{ fontWeight: "bold" }}>Subcategory:</Text>{" "}
-          {product.subcategory}
-        </Text>
-        <Text style={styles.rating}>⭐ {product.averageRating || 5}/5</Text>
-        <Text style={{ color: "#28a745" }}>{product.stock} units in stock</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingRight: 15,
+            marginBottom: 10,
+          }}
+        >
+          <Text style={styles.name}>{product.name}</Text>
+          {renderStars(product.averageRating)}
+        </View>
 
-        <Text style={styles.price}>
-          ₹{discountedPrice.toFixed(2)}{" "}
-          {product.discount > 0 && (
-            <View
-              style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
-            >
-              <Text style={styles.original}>₹{product.price}</Text>
-              <Text style={styles.discount}>{product.discount}% OFF</Text>
-            </View>
-          )}
-        </Text>
+        <View style={styles.categoryRow}>
+          <TouchableOpacity
+            style={[styles.categoryButton, { backgroundColor: "#dc3545" }]}
+          >
+            <Text style={styles.categoryText}>{product.category}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.categoryButton, { backgroundColor: "#007bff" }]}
+          >
+            <Text style={styles.categoryText}>{product.subcategory}</Text>
+          </TouchableOpacity>
+        </View>
 
-        <Text style={styles.description}>{product.description}</Text>
+        <View
+          style={{
+            display: "flex",
+            gap: 5,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Text style={styles.price}>
+            ₹{discountedPrice.toFixed(2)}{" "}
+            {product.discount < 0 && (
+              <View
+                style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
+              >
+                <Text style={styles.original}>₹{product.price}</Text>
+                <Text style={styles.discount}>{product.discount}% OFF</Text>
+              </View>
+            )}
+          </Text>
+          <Text style={{ color: "#28a745" }}>
+            {product.stock} units in stock
+          </Text>
+        </View>
 
         <View style={styles.buttonRow}>
           <TouchableOpacity
@@ -221,6 +260,8 @@ const ProductPage = () => {
             <Text style={styles.buttonText}>Buy Now</Text>
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.description}>{product.description}</Text>
       </View>
 
       <View style={styles.reviews}>
@@ -256,7 +297,8 @@ const styles = StyleSheet.create({
   thumbnailRow: {
     flexDirection: "row",
     justifyContent: "center",
-    paddingVertical: 10,
+    gap: 10,
+    marginBottom: 15,
   },
   thumbnail: {
     width: 60,
@@ -269,60 +311,79 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   name: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "bold",
   },
   rating: {
-    fontSize: 16,
+    fontSize: 20,
     marginVertical: 4,
+    color: "#FFD700", // gold
+  },
+  categoryRow: {
+    flexDirection: "row",
+    marginBottom: 10,
+    gap: 10,
+  },
+  categoryButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  categoryText: {
+    fontWeight: "bold",
+    color: "#fff",
   },
   price: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
-    marginVertical: 8,
   },
   original: {
-    textDecorationLine: "line-through",
-    color: "#888",
     fontSize: 16,
+    color: "#888",
+    textDecorationLine: "line-through",
   },
   discount: {
-    color: "#dc3545",
-    fontSize: 16,
-    marginLeft: 8,
-  },
-  description: {
-    fontSize: 16,
-    marginVertical: 10,
+    fontSize: 14,
+    color: "red",
+    fontWeight: "bold",
+    marginLeft: 6,
   },
   buttonRow: {
     flexDirection: "row",
-    gap: 12,
-    marginTop: 10,
-    flexWrap: "wrap",
+    gap: 15,
+    marginVertical: 16,
   },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 10,
     backgroundColor: "#007bff",
-    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontSize: 18,
+  },
+  description: {
+    fontSize: 17,
+    marginTop: 8,
+    lineHeight: 22,
+    color: "#555",
   },
   reviews: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 30,
   },
   reviewHeader: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 12,
   },
   reviewItem: {
-    marginBottom: 10,
-    padding: 8,
-    backgroundColor: "#f4f4f4",
-    borderRadius: 6,
+    marginBottom: 15,
+    backgroundColor: "#f2f2f2",
+    padding: 12,
+    borderRadius: 8,
   },
 });

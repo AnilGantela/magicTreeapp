@@ -6,21 +6,16 @@ import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 
 const VerifyPaymentPage = () => {
   const router = useRouter();
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+  const { razorpayOrderId, razorpayPaymentId, razorpaySignature } =
     useLocalSearchParams();
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Verifying payment with params:", {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    });
     const verifyPayment = async () => {
       try {
         // Validate parameters
-        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
           throw new Error("Missing Razorpay payment details");
         }
 
@@ -33,9 +28,9 @@ const VerifyPaymentPage = () => {
         const response = await axios.post(
           "https://magictreebackend.onrender.com/payment/verify",
           {
-            razorpayOrderId: razorpay_order_id,
-            razorpayPaymentId: razorpay_payment_id,
-            razorpaySignature: razorpay_signature,
+            razorpayOrderId,
+            razorpayPaymentId,
+            razorpaySignature,
           },
           {
             headers: {

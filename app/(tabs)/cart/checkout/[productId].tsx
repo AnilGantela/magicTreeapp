@@ -143,7 +143,7 @@ const CheckoutScreen = () => {
         console.log("Currency:", currency);
 
         router.replace({
-          pathname: "/cart/checkout/RazorpayWebView",
+          pathname: "/(auth)/RazorpayWebView",
           params: {
             razorpayOrderId,
             razorpayKeyId,

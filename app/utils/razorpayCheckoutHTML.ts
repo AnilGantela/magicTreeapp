@@ -21,8 +21,10 @@ export const getRazorpayHTML = (
           align-items: center;
           justify-content: center;
           height: 100vh;
+          margin: 0;
           font-family: sans-serif;
-          color: #5A5AFF;
+          color: white;
+          background: linear-gradient(to right, hsla(20, 100%, 22%, 1), hsla(19, 100%, 56%, 1));
         }
       </style>
     </head>
@@ -42,7 +44,7 @@ export const getRazorpayHTML = (
             contact: "${user?.phone || ""}"
           },
           theme: {
-            color: "#5A5AFF"
+            color: "hsla(151, 93%, 22%, 1)"
           },
           handler: function (response) {
             window.ReactNativeWebView.postMessage(JSON.stringify({

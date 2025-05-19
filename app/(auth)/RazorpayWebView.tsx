@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { Alert, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { getRazorpayHTML } from "../../../utils/razorpayCheckoutHTML";
+import { getRazorpayHTML } from "../utils/razorpayCheckoutHTML";
 
 const RazorpayWebView = () => {
   const router = useRouter();
@@ -23,7 +23,7 @@ const RazorpayWebView = () => {
 
       if (data.cancelled) {
         Alert.alert("Payment Cancelled", "You cancelled the payment.");
-        router.back();
+        router.replace("/(tabs)"); // Or some fallback screen instead of router.back()
         return;
       }
       console.log("Payment response:", data);
