@@ -3,6 +3,8 @@ import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator } from "react-native";
+
 import {
   Dimensions,
   Image,
@@ -133,82 +135,87 @@ const CartScreen: React.FC = () => {
     <View style={styles.cartContainer}>
       <View style={styles.contentContainer}>
         {loading ? (
-          <Text>Loading cart...</Text>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#28a745" />
+          </View>
         ) : cartItems.length === 0 ? (
           <View style={styles.emptyCartContainer}>
             <Image
-              source={require("@/assets/images/AppLogo.jpg")}
+              source={require("@/assets/images/empty-cart.png")}
+              resizeMode="contain"
               style={styles.emptyCartImage}
             />
-            <Text>No items in cart</Text>
           </View>
         ) : (
-          <ScrollView>
-            {cartItems.map((item) => (
-              <View key={item.productId} style={styles.cartItemContainer}>
-                <Image
-                  source={
-                    item.image
-                      ? { uri: item.image }
-                      : require("@/assets/images/AppLogo.jpg")
-                  }
-                  style={styles.itemImage}
-                />
-                <View style={styles.itemDetails}>
-                  <Text>{item.name}</Text>
-                  <Text>
-                    ₹{((item.price || 0) - (item.discount || 0)).toFixed(2)}
-                  </Text>
-                  <View style={styles.quantityWrapper}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        updateQuantity(item.productId, item.quantity - 1)
-                      }
-                    >
-                      <Text>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.quantityText}>{item.quantity}</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        updateQuantity(item.productId, item.quantity + 1)
-                      }
-                    >
-                      <Text>+</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => removeItem(item.productId)}
-                    >
-                      <MaterialIcons name="delete" size={24} color="red" />
-                    </TouchableOpacity>
+          <>
+            <ScrollView>
+              {cartItems.map((item) => (
+                <View key={item.productId} style={styles.cartItemContainer}>
+                  <Image
+                    source={
+                      item.image
+                        ? { uri: item.image }
+                        : require("@/assets/images/AppLogo.jpg")
+                    }
+                    style={styles.itemImage}
+                  />
+                  <View style={styles.itemDetails}>
+                    <Text>{item.name}</Text>
+                    <Text>
+                      ₹{((item.price || 0) - (item.discount || 0)).toFixed(2)}
+                    </Text>
+                    <View style={styles.quantityWrapper}>
+                      <TouchableOpacity
+                        onPress={() =>
+                          updateQuantity(item.productId, item.quantity - 1)
+                        }
+                      >
+                        <Text>-</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.quantityText}>{item.quantity}</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          updateQuantity(item.productId, item.quantity + 1)
+                        }
+                      >
+                        <Text>+</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => removeItem(item.productId)}
+                      >
+                        <MaterialIcons name="delete" size={24} color="red" />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
+              ))}
+            </ScrollView>
+            <View style={styles.footerContainer}>
+              <View style={styles.totalSection}>
+                <Text style={styles.totalLabel}>Total:</Text>
+                <Text style={styles.totalPrice}>₹{totalPrice.toFixed(2)}</Text>
               </View>
-            ))}
-          </ScrollView>
+
+              <TouchableOpacity
+                style={styles.couponButton}
+                onPress={() => {
+                  // handle coupon logic
+                }}
+              >
+                <Text style={styles.couponText}>Have a coupon?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.checkoutButton}
+                onPress={handleCheckout}
+              >
+                <Text style={styles.checkoutButtonText}>
+                  Proceed to Checkout
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
         )}
-      </View>
-
-      <View style={styles.footerContainer}>
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalPrice}>₹{totalPrice.toFixed(2)}</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.couponButton}
-          onPress={() => {
-            // handle coupon logic
-          }}
-        >
-          <Text style={styles.couponText}>Have a coupon?</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.checkoutButton}
-          onPress={handleCheckout}
-        >
-          <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -221,7 +228,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   contentContainer: {
-    minHeight: SCREEN_HEIGHT - FOOTER_HEIGHT - 30,
+    minHeight: SCREEN_HEIGHT - 70,
     padding: 16,
   },
   cartItemContainer: {
@@ -253,9 +260,16 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 50,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+
   emptyCartImage: {
-    width: 150,
-    height: 150,
+    width: 300,
+    height: 300,
     marginBottom: 20,
   },
   footerContainer: {

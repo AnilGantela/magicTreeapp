@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -18,6 +19,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const validateForm = () => {
@@ -36,6 +38,8 @@ const Login = () => {
   const handleLogin = async () => {
     if (!validateForm()) return;
 
+    setLoading(true);
+
     try {
       const response = await fetch(
         "https://magictreebackend.onrender.com/user/login",
@@ -53,11 +57,34 @@ const Login = () => {
       router.replace("/");
     } catch (err: any) {
       Alert.alert("Login Failed", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
+      <Pressable
+        style={[styles.exitIcon, { left: 20, right: undefined }]}
+        onPress={() => router.replace("/")}
+        hitSlop={10}
+      >
+        <Ionicons
+          name="exit-outline"
+          size={32}
+          color="#333"
+          style={{ transform: [{ rotate: "180deg" }] }}
+        />
+      </Pressable>
+
       <View style={styles.imageContainer}>
         <Image
           style={styles.image}
@@ -73,10 +100,19 @@ const Login = () => {
         end={{ x: 1, y: 0 }}
         style={styles.formContainer}
       >
-        <Text style={styles.title}>Login</Text>
-
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={styles.title}>Login</Text>
+          <Pressable onPress={() => router.push("/(auth)/forgotpassword")}>
+            <Text style={styles.link}>forgot password</Text>
+          </Pressable>
+        </View>
         {error ? <Text style={styles.error}>{error}</Text> : null}
-
         <TextInput
           style={styles.emailInput}
           placeholder="Email"
@@ -86,7 +122,6 @@ const Login = () => {
           onChangeText={setEmail}
           placeholderTextColor="#fff"
         />
-
         <View style={styles.passwordContainer}>
           <TextInput
             style={[styles.input, { flex: 1, color: "#fff" }]}
@@ -104,18 +139,20 @@ const Login = () => {
             />
           </Pressable>
         </View>
-
-        <Pressable onPress={handleLogin}>
+        <Pressable onPress={handleLogin} disabled={loading}>
           <LinearGradient
-            colors={["hsla(151, 93%, 22%, 1)", "hsla(151, 97%, 12%, 1)"]}
+            colors={
+              loading
+                ? ["#ccc", "#aaa"]
+                : ["hsla(151, 93%, 22%, 1)", "hsla(151, 97%, 12%, 1)"]
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={styles.button}
+            style={[styles.button, loading && { opacity: 0.8 }]}
           >
             <Text style={styles.buttonText}>Login</Text>
           </LinearGradient>
         </Pressable>
-
         <Pressable onPress={() => router.push("/(auth)/signin")}>
           <Text style={styles.link}>Not a member? Register here</Text>
         </Pressable>
@@ -129,7 +166,23 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e3e4e2", // Base container background
+    backgroundColor: "#e3e4e2",
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  exitIcon: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: "#e3e4e2",
+    borderRadius: 20,
+    padding: 2,
+    elevation: 0,
   },
   imageContainer: {
     backgroundColor: "#e3e4e2",

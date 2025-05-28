@@ -27,6 +27,12 @@ export default function SearchStackLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="forgotpassword"
+        options={{
+          headerShown: false,
+        }}
+      />
 
       <Stack.Screen
         name="signin"

@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/AppLogo.jpg",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.magictree.magictree"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "de3004e7-ea71-4347-a835-cf6c43326bc5"
+      }
     }
   }
 }

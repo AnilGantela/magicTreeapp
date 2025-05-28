@@ -15,6 +15,12 @@ export default function SearchStackLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="allproductspage"
+        options={{
+          headerShown: false,
+        }}
+      />
 
       <Stack.Screen
         name="[productId]"

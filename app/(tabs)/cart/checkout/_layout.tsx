@@ -50,7 +50,7 @@ export default function SearchStackLayout() {
           headerLeft: () => (
             <TouchableOpacity
               style={{ paddingHorizontal: 10 }}
-              onPress={() => router.replace("/(tabs)/cart")}
+              onPress={() => router.replace("/(tabs)")}
             >
               <Ionicons name="arrow-back" size={24} color="#ffffff" />
             </TouchableOpacity>

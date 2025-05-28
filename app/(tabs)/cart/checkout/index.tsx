@@ -203,11 +203,13 @@ const CartCheckout = () => {
         style={styles.input}
         placeholder="Your Name"
         value={name}
+        placeholderTextColor="#000"
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
+        placeholderTextColor="#000"
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
@@ -231,6 +233,7 @@ const CartCheckout = () => {
             <TextInput
               key={field}
               style={styles.input}
+              placeholderTextColor="#000"
               placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
               value={newAddress[field as keyof typeof newAddress]}
               onChangeText={(text) =>

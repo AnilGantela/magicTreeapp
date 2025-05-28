@@ -1,8 +1,10 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
@@ -17,6 +19,7 @@ import {
 
 const Register = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -64,6 +67,7 @@ const Register = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
+    setLoading(true);
 
     const userPayload = {
       name: form.name,
@@ -100,8 +104,18 @@ const Register = () => {
       router.replace("/(tabs)");
     } catch (err: any) {
       Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -110,8 +124,19 @@ const Register = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
       >
-        {/* Top image section (non-scrollable) */}
         <View style={styles.imageContainer}>
+          <Pressable
+            style={[styles.exitIcon, { left: 20, right: undefined }]}
+            onPress={() => router.replace("/")}
+            hitSlop={10}
+          >
+            <Ionicons
+              name="exit-outline"
+              size={32}
+              color="#333"
+              style={{ transform: [{ rotate: "180deg" }] }}
+            />
+          </Pressable>
           <Image
             style={styles.image}
             source={require("@/assets/images/AppLogo.jpg")}
@@ -119,7 +144,6 @@ const Register = () => {
           />
         </View>
 
-        {/* Form section (scrollable) */}
         <LinearGradient
           colors={["hsla(20, 100%, 22%, 1)", "hsla(19, 100%, 56%, 1)"]}
           start={{ x: 0, y: 0 }}
@@ -134,18 +158,21 @@ const Register = () => {
 
             <TextInput
               placeholder="Name"
+              placeholderTextColor="#000"
               value={form.name}
               onChangeText={(text) => handleChange("name", text)}
               style={styles.input}
             />
             <TextInput
               placeholder="Email"
+              placeholderTextColor="#000"
               value={form.email}
               onChangeText={(text) => handleChange("email", text)}
               style={styles.input}
             />
             <TextInput
               placeholder="Phone"
+              placeholderTextColor="#000"
               value={form.phone}
               onChangeText={(text) => handleChange("phone", text)}
               style={styles.input}
@@ -153,6 +180,7 @@ const Register = () => {
             <TextInput
               placeholder="Password"
               value={form.password}
+              placeholderTextColor="#000"
               secureTextEntry
               onChangeText={(text) => handleChange("password", text)}
               style={styles.input}
@@ -160,6 +188,7 @@ const Register = () => {
             <TextInput
               placeholder="Street"
               value={form.street}
+              placeholderTextColor="#000"
               onChangeText={(text) => handleChange("street", text)}
               style={styles.input}
             />
@@ -168,11 +197,13 @@ const Register = () => {
               <TextInput
                 placeholder="City"
                 value={form.city}
+                placeholderTextColor="#000"
                 onChangeText={(text) => handleChange("city", text)}
                 style={[styles.input, styles.halfInput, { marginRight: 10 }]}
               />
               <TextInput
                 placeholder="Zip"
+                placeholderTextColor="#000"
                 value={form.zip}
                 onChangeText={(text) => handleChange("zip", text)}
                 style={[styles.input, styles.halfInput]}
@@ -183,13 +214,14 @@ const Register = () => {
               <TextInput
                 placeholder="State"
                 value={form.state}
+                placeholderTextColor="#000"
                 onChangeText={(text) => handleChange("state", text)}
                 style={[styles.input, styles.halfInput, { marginRight: 10 }]}
               />
-
               <TextInput
                 placeholder="Country"
                 value={form.country}
+                placeholderTextColor="#000"
                 onChangeText={(text) => handleChange("country", text)}
                 style={[styles.input, styles.halfInput]}
               />
@@ -233,6 +265,15 @@ const styles = StyleSheet.create({
     width: 200,
     height: 150,
   },
+  exitIcon: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: "#e3e4e2",
+    borderRadius: 20,
+    padding: 2,
+  },
   formWrapper: {
     flex: 1,
     borderTopLeftRadius: 15,
@@ -258,6 +299,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginBottom: 15,
+    color: "#333",
   },
   button: {
     padding: 15,
@@ -282,5 +324,11 @@ const styles = StyleSheet.create({
   },
   halfInput: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

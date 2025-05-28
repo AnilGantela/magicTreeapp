@@ -19,6 +19,13 @@ export default function TabLayout() {
         ),
         tabBarActiveTintColor: COLORS.WHITE,
         tabBarInactiveTintColor: COLORS.BLACK,
+        tabBarIconStyle: {
+          marginTop: 8,
+          marginBottom: 0.5,
+        },
+        tabBarStyle: {
+          height: 70,
+        },
       }}
     >
       <Tabs.Screen
@@ -36,6 +43,15 @@ export default function TabLayout() {
           title: "Search",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="support"
+        options={{
+          title: "support",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubble-ellipses" color={color} size={size} />
           ),
         }}
       />

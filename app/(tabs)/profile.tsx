@@ -61,8 +61,8 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007bff" />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#28a745" />
       </View>
     );
   }
@@ -70,7 +70,6 @@ const ProfilePage = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>User Details</Text>
         <TouchableOpacity onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
@@ -109,9 +108,7 @@ const ProfilePage = () => {
             </Text>
             <Text style={styles.detail}>Phone: {order.phoneNumber}</Text>
             <Text style={styles.detail}>Address: {order.shippingAddress}</Text>
-            <Text style={styles.detail}>
-              Total: ₹{order.totalAmount.toFixed(2)}
-            </Text>
+            <Text style={styles.detail}>Total: ₹{order.totalAmount / 100}</Text>
             <Text style={styles.detail}>
               Payment: {order.payment.method} ({order.payment.status})
             </Text>
@@ -144,6 +141,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#fff",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
   centered: {
     flex: 1,
     justifyContent: "center",
@@ -151,7 +154,9 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
+    paddingVertical: 26,
+    paddingHorizontal: 16,
     alignItems: "center",
   },
   title: {

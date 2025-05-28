@@ -1,5 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
+import { LinearGradient } from "expo-linear-gradient";
+import { ActivityIndicator } from "react-native";
+
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
+
 import {
   Dimensions,
   Image,
@@ -14,6 +20,9 @@ const { width } = Dimensions.get("window");
 
 export default function Home() {
   const [groupedProducts, setGroupedProducts] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  const [selectedNetwork, setSelectedNetwork] = useState("india");
   const carouselRef = useRef(null);
   const router = useRouter();
 
@@ -26,6 +35,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
           "https://magictreebackend.onrender.com/products/"
         );
@@ -41,6 +51,8 @@ export default function Home() {
         setGroupedProducts(grouped);
       } catch (error) {
         console.error(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -48,67 +60,246 @@ export default function Home() {
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.bannerContainer}>
-        {/* Add banner scroll if needed */}
-      </View>
-
-      {Object.entries(groupedProducts).map(([category, products]) => (
-        <View key={category}>
-          <Text style={styles.categoryTitle}>{category}</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.productSection}
+    <View style={styles.mainContainer}>
+      {/* Modern Header */}
+      <LinearGradient
+        colors={["#6a1b1a", "#ff7043"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.headerContainer}
+      >
+        <View style={styles.headerContent}>
+          <Text style={styles.brandTitle}>🌳 MagicTree</Text>
+          <TouchableOpacity
+            style={styles.searchBox}
+            activeOpacity={0.8}
+            onPress={() => router.push("/Search")}
           >
-            {products.map((product) => {
-              const discountedPrice = Math.round(
-                product.price * (1 - (product.discount || 0) / 100)
-              );
-
-              return (
-                <TouchableOpacity
-                  key={product._id || product.id}
-                  style={styles.productCard}
-                  onPress={() => router.push(`/Search/${product._id}`)}
-                >
-                  {product.discount > 0 && (
-                    <Text style={styles.discountBadge}>
-                      -{product.discount}%
-                    </Text>
-                  )}
-                  <Image
-                    source={{ uri: product.images?.[1] || product.images?.[0] }}
-                    style={styles.productImage}
-                  />
-                  <Text style={styles.productTitle}>{product.name}</Text>
-                  <View style={styles.priceAndRatingRow}>
-                    <View>
-                      {product.discount > 0 && (
-                        <Text style={styles.strikePrice}>₹{product.price}</Text>
-                      )}
-                      <Text style={styles.productPrice}>
-                        ₹{discountedPrice}
-                      </Text>
-                    </View>
-                    <Text style={styles.averageRating}>
-                      ⭐ {product.averageRating || 5}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+            <Ionicons name="search-outline" size={20} color="#888" />
+            <Text style={styles.searchPlaceholder}>Search products...</Text>
+          </TouchableOpacity>
         </View>
-      ))}
-    </ScrollView>
+      </LinearGradient>
+
+      {/* Scrollable Content */}
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.tabBar}>
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => router.push("/Search/allproductspage")}
+          >
+            <Text style={styles.tabText}>Products</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => {
+              // Future implementation or another route
+              console.log("Manufacturers clicked");
+            }}
+          >
+            <Text style={styles.tabText}>Manufacturers</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => {
+              // Future implementation or another route
+              console.log("Regional Suppliers clicked");
+            }}
+          >
+            <Text style={styles.tabText}>Regional Suppliers</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.networkPickerContainer}>
+          <Text style={styles.networkLabel}>Select Network</Text>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={selectedNetwork}
+              onValueChange={(itemValue) => setSelectedNetwork(itemValue)}
+              style={styles.picker}
+              dropdownIconColor="#007AFF"
+            >
+              <Picker.Item label="India" value="india" />
+              <Picker.Item label="USA" value="usa" />
+              <Picker.Item label="Germany" value="germany" />
+              <Picker.Item label="Japan" value="japan" />
+              <Picker.Item label="Brazil" value="brazil" />
+            </Picker>
+          </View>
+        </View>
+        {loading ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingTop: 50,
+            }}
+          >
+            <ActivityIndicator size="large" color="#007AFF" />
+            <Text style={{ marginTop: 10, fontSize: 16, color: "#555" }}>
+              Loading products...
+            </Text>
+          </View>
+        ) : (
+          Object.entries(groupedProducts).map(([category, products]) => (
+            <View key={category}>
+              <Text style={styles.categoryTitle}>{category}</Text>
+              <View style={styles.productGrid}>
+                {products.map((product) => {
+                  const discountedPrice = Math.round(
+                    product.price * (1 - (product.discount || 0) / 100)
+                  );
+                  return (
+                    <TouchableOpacity
+                      key={product._id || product.id}
+                      style={styles.productCard}
+                      onPress={() => router.push(`/Search/${product._id}`)}
+                    >
+                      {product.discount > 0 && (
+                        <Text style={styles.discountBadge}>
+                          -{product.discount}%
+                        </Text>
+                      )}
+                      <Image
+                        source={{
+                          uri: product.images?.[1] || product.images?.[0],
+                        }}
+                        style={styles.productImage}
+                      />
+                      <Text style={styles.productTitle}>{product.name}</Text>
+                      <View style={styles.priceAndRatingRow}>
+                        <View>
+                          {product.discount > 0 && (
+                            <Text style={styles.strikePrice}>
+                              ₹{product.price}
+                            </Text>
+                          )}
+                          <Text style={styles.productPrice}>
+                            ₹{discountedPrice}
+                          </Text>
+                        </View>
+                        <Text style={styles.averageRating}>
+                          ⭐ {product.averageRating || 5}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  headerContainer: {
+    paddingTop: 50,
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  headerContent: {
+    flexDirection: "column",
+    gap: 15,
+  },
+  tabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#f2f2f2",
+    paddingVertical: 10,
+    marginBottom: 10,
+  },
+  networkPickerContainer: {
+    marginHorizontal: 16,
+    marginBottom: 20,
+  },
+  networkLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 6,
+    color: "#333",
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+  },
+
+  tabItem: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: 14,
+    color: "#333",
+  },
+
+  brandTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  productGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingBottom: 20,
+  },
+  productCard: {
+    width: "48%", // roughly half of the row
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    marginBottom: 15,
+    padding: 10,
+    position: "relative",
+  },
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 25,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  searchPlaceholder: {
+    color: "#888",
+    fontSize: 16,
+    marginLeft: 8,
   },
   bannerContainer: {
     height: 200,
@@ -129,14 +320,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingBottom: 20,
   },
-  productCard: {
-    width: 150,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 10,
-    marginRight: 10,
-    padding: 10,
-    position: "relative",
-  },
+
   discountBadge: {
     position: "absolute",
     top: 5,

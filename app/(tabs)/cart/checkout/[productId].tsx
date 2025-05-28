@@ -242,12 +242,14 @@ const CheckoutScreen = () => {
         style={styles.input}
         placeholder="Your Name"
         value={name}
+        placeholderTextColor="#000"
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
         value={phone}
+        placeholderTextColor="#000"
         onChangeText={setPhone}
         keyboardType="phone-pad"
       />
@@ -270,6 +272,7 @@ const CheckoutScreen = () => {
             style={styles.input}
             placeholder="Street"
             value={newAddress.street}
+            placeholderTextColor="#000"
             onChangeText={(text) =>
               setNewAddress({ ...newAddress, street: text })
             }
@@ -278,6 +281,7 @@ const CheckoutScreen = () => {
             style={styles.input}
             placeholder="City"
             value={newAddress.city}
+            placeholderTextColor="#000"
             onChangeText={(text) =>
               setNewAddress({ ...newAddress, city: text })
             }
@@ -286,6 +290,7 @@ const CheckoutScreen = () => {
             style={styles.input}
             placeholder="State"
             value={newAddress.state}
+            placeholderTextColor="#000"
             onChangeText={(text) =>
               setNewAddress({ ...newAddress, state: text })
             }
@@ -293,6 +298,7 @@ const CheckoutScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="ZIP Code"
+            placeholderTextColor="#000"
             value={newAddress.zip}
             onChangeText={(text) => setNewAddress({ ...newAddress, zip: text })}
             keyboardType="numeric"
@@ -300,6 +306,7 @@ const CheckoutScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Country"
+            placeholderTextColor="#000"
             value={newAddress.country}
             onChangeText={(text) =>
               setNewAddress({ ...newAddress, country: text })
@@ -411,9 +418,9 @@ const CheckoutScreen = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.goBack()}
+          onPress={() => router.replace(`/(tabs)/Search/${productId}`)}
         >
-          <Text style={styles.backButtonText}>Back to Cart</Text>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.payButton}
