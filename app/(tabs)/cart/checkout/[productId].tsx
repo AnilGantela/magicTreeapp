@@ -38,7 +38,7 @@ const CheckoutScreen = () => {
 
   const discount = 50;
   const deliveryDate = new Date();
-  deliveryDate.setDate(deliveryDate.getDate() + 5);
+  deliveryDate.setDate(deliveryDate.getDate() + 10);
 
   useEffect(() => {
     const fetchData = async () => {

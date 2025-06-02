@@ -19,7 +19,8 @@ export default function ForgotPasswordScreen() {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -158,31 +159,43 @@ export default function ForgotPasswordScreen() {
               <TextInput
                 style={styles.passwordInput}
                 placeholder="New password"
-                secureTextEntry={!showPassword}
+                secureTextEntry={!showPassword1}
                 value={newPassword}
                 onChangeText={setNewPassword}
                 placeholderTextColor="#fff"
               />
               <Pressable
-                onPress={() => setShowPassword(!showPassword)}
+                onPress={() => setShowPassword1(!showPassword1)}
                 style={styles.eyeIcon}
               >
                 <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
+                  name={showPassword1 ? "eye-off" : "eye"}
                   size={22}
                   color="#fff"
                 />
               </Pressable>
             </View>
 
-            <TextInput
-              style={styles.emailInput}
-              placeholder="Confirm password"
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholderTextColor="#fff"
-            />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Confirm password"
+                secureTextEntry={!showPassword2}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholderTextColor="#fff"
+              />
+              <Pressable
+                onPress={() => setShowPassword2(!showPassword2)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={showPassword2 ? "eye-off" : "eye"}
+                  size={22}
+                  color="#fff"
+                />
+              </Pressable>
+            </View>
 
             <TextInput
               style={styles.otpInput}

@@ -15,12 +15,6 @@ export default function SearchStackLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="allproductspage"
-        options={{
-          headerShown: false,
-        }}
-      />
 
       <Stack.Screen
         name="[productId]"
@@ -39,7 +33,7 @@ export default function SearchStackLayout() {
           headerLeft: () => (
             <TouchableOpacity
               style={{ paddingHorizontal: 10 }}
-              onPress={() => router.replace("/(tabs)/Search")}
+              onPress={() => router.push("/(tabs)/Search")}
             >
               <Ionicons name="arrow-back" size={24} color="#ffffff" />
             </TouchableOpacity>

@@ -40,10 +40,15 @@ const ProfilePage = () => {
         );
         const orderData = await orderRes.json();
 
-        const filteredOrders = orderData.filter(
-          (order: any) => order.payment && order.payment.status
-        );
-        setOrders(filteredOrders);
+        // Sort orders by createdAt DESC
+        const sortedOrders = orderData
+          .filter((order: any) => order.payment && order.payment.status)
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+
+        setOrders(sortedOrders);
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -109,6 +114,20 @@ const ProfilePage = () => {
             <Text style={styles.detail}>Phone: {order.phoneNumber}</Text>
             <Text style={styles.detail}>Address: {order.shippingAddress}</Text>
             <Text style={styles.detail}>Total: ₹{order.totalAmount / 100}</Text>
+            <Text style={styles.detail}>
+              Ordered on:{" "}
+              {new Date(order.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}{" "}
+              at{" "}
+              {new Date(order.createdAt).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })}
+            </Text>
             <Text style={styles.detail}>
               Payment: {order.payment.method} ({order.payment.status})
             </Text>

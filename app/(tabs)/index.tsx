@@ -86,7 +86,7 @@ export default function Home() {
         <View style={styles.tabBar}>
           <TouchableOpacity
             style={styles.tabItem}
-            onPress={() => router.push("/Search/allproductspage")}
+            onPress={() => router.push("/(auth)/allproductspage")}
           >
             <Text style={styles.tabText}>Products</Text>
           </TouchableOpacity>
@@ -245,10 +245,12 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     borderRadius: 8,
     overflow: "hidden",
+    color: "#333",
   },
   picker: {
     height: 50,
     width: "100%",
+    color: "#333",
   },
 
   tabItem: {
