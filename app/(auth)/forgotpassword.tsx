@@ -107,7 +107,7 @@ export default function ForgotPasswordScreen() {
       <View style={styles.imageContainer}>
         <Image
           style={styles.image}
-          source={require("@/assets/images/FullLogo.jpg")}
+          source={require("@/assets/images/fullLogo.jpg")}
           alt="app-logo"
           resizeMode="contain"
         />

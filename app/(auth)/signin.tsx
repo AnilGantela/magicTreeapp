@@ -139,7 +139,7 @@ const Register = () => {
           </Pressable>
           <Image
             style={styles.image}
-            source={require("@/assets/images/FullLogo.jpg")}
+            source={require("@/assets/images/fullLogo.jpg")}
             resizeMode="contain"
           />
         </View>

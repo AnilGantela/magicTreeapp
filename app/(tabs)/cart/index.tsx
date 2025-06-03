@@ -155,7 +155,7 @@ const CartScreen: React.FC = () => {
                     source={
                       item.image
                         ? { uri: item.image }
-                        : require("@/assets/images/FullLogo.jpg")
+                        : require("@/assets/images/fullLogo.jpg")
                     }
                     style={styles.itemImage}
                   />
