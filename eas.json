@@ -11,6 +11,11 @@
     "preview": {
       "distribution": "internal"
     },
+    "finalfix": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "autoIncrement": true
     }
